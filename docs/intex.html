@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Accessiblity to Hospitals by Public Transportation in Albany, New York</title>
+<style>
+    html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: black;
+    }
+    #header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #9FC8DE;
+        height: 10%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: black;
+        z-index: 10;
+        border: 5px solid black;
+        font-family: sans-serif;
+    }
+     #viewDiv {
+        position: absolute;
+        top: 13.5%;
+        left: 20%;
+        height: 90%;
+        width: 40%;
+        border-bottom: 5px solid black;
+        border-right: 5px solid black;
+        border-left: 5px solid black;
+        border-top: 1px solid black; 
+    }
+    #viewDiv2 {
+        position: absolute;
+        top: 10%;
+        left: 60%;
+        height: 90%;
+        width: 40%;
+    }
+     #mapTop {
+        height: 50%;
+        width: 100%;
+        border-top: 5px solid black;
+        border-left: 5px solid black;
+    }
+    #mapBottom {
+        height: 50%;
+        width: 100%;
+        border: 5px solid black;
+    }
+    #legendDiv {
+        position: absolute;
+        top: 10%;
+        left: 0;
+        width: 20%;
+        height: 90%;
+        padding: 10px;
+        overflow-y: auto;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        border-bottom: 5px solid black;
+        flex-direction: column;
+        background-color: #353535;
+    }
+        #titleDiv{
+        float: left;
+        height: 31px;
+        width: 100%;
+        background-color: black;
+        color: #9FC8DE;
+        text-align: center;
+        justify-content: center;
+        font-size: 23px
+    }
+        #titleDiv2{
+        position: absolute;
+        top: 10%;
+        left: 20%;
+        width: 40%; 
+        background-color: black;
+        color: #9FC8DE;
+        text-align: center;
+        font-size: 23px;          
+    }
+    .esri-layer-list, .esri-layer-list__item, .esri-layer-list__panel, .esri-legend__service, .actions-end, .esri-legend__layer-body {
+        background-color: #353535;
+        color: white
+    }
+/* .esri-layer-list__item-content is the title of each layer
+    .esri-layer-list__item is the style when a button is hovered over
+    .esri-layer-list__item-active is the style when clicked
+    .esri-layer-list__content-bottom is set to transparent by default
+    .esri-layer-list__item-content is the text in the layer titles
+    .esri-layer-list__visible-toggle is the eyeball
+    .esri-layer-list__status-indicator is the little dot next to the eyeball
+    
+
+</style>
+<link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/dark/main.css">
+<script src="https://js.arcgis.com/4.31/"></script>
+</head>
+<body>
+    <script>
+        require([
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/FeatureLayer",
+            "esri/widgets/Legend",
+            "esri/widgets/LayerList",
+            "esri/symbols/SimpleLineSymbol",
+            "esri/symbols/PictureMarkerSymbol",
+            "esri/renderers/SimpleRenderer"
+        ], function(Map, MapView, FeatureLayer, Legend, LayerList, SimpleLineSymbol, PictureMarkerSymbol, SimpleRenderer) {
+        
+        var myMap = new Map({
+                basemap: "gray-vector"
+            });
+
+            var myView = new MapView({
+                container: "viewDiv",
+                map: myMap,
+                zoom: 10,
+                center: [-73.7562, 42.7]
+            });
+            
+            var distance = new FeatureLayer({
+                portalItem:{
+                    id:"86c8c5da03b94c2cbe51cbc29e962c76"
+                },
+                opacity: 0.6
+            });
+                myMap.add(distance);
+            
+            var TransSym = new SimpleLineSymbol({
+                color: "#414140",
+                style: "solid"
+        });
+        
+            var TransRenderer = new SimpleRenderer ({
+                symbol: TransSym
+                
+            });
+            var publictransit1 = new FeatureLayer({
+                url:"https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Transit_Map_Routes/FeatureServer/0",
+                title: "National Transit Map Routes",
+                renderer: TransRenderer,
+                
+            });
+        
+                myMap.add(publictransit1);
+                    
+            
+            var HospSym = new PictureMarkerSymbol({
+                url: "https://upload.wikimedia.org/wikipedia/commons/c/cb/HSRed_cross.svg"
+            });
+            var HospRend = new SimpleRenderer({
+                symbol: HospSym
+            });
+            
+            var hospitals1 = new FeatureLayer({
+                url: "https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/Hospitals_gdb/FeatureServer/0",
+                title: "Hospitals",
+                renderer: HospRend,
+            });
+            
+                myMap.add(hospitals1);
+            
+            
+      var myMap2 = new Map({
+                basemap: "gray-vector"
+            });
+
+            var myView2 = new MapView({
+                container: "mapTop",
+                map: myMap2,
+                zoom: 10,
+                center: [-73.7562, 42.7]
+            });
+            
+             var popdens = new FeatureLayer({
+                portalItem:{
+                    id:"d2f59b8340e04b33979d88e4dcce633f"
+                },
+                 opacity: 0.6
+            });
+            myMap2.add(popdens);
+            
+            var TransSym2 = new SimpleLineSymbol({
+                color: "#414140",
+                style: "solid",
+                
+            });
+        
+            var TransRenderer2 = new SimpleRenderer ({
+                symbol: TransSym2
+                
+            });    
+            var publictransit2 = new FeatureLayer({
+                url:"https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Transit_Map_Routes/FeatureServer/0",
+                title: "National Transit Map Routes",
+                renderer: TransRenderer2,
+            });
+        
+                myMap2.add(publictransit2);
+            
+            var hospitals2 = new FeatureLayer({
+                url: "https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/Hospitals_gdb/FeatureServer/0",
+                title: "Hospitals",
+                renderer: HospRend,
+            });
+            
+                myMap2.add(hospitals2);
+ 
+            var myMap3 = new Map({
+                basemap: "gray-vector"
+            });
+            
+
+            var myView3 = new MapView({
+                container: "mapBottom",
+                map: myMap3,
+                zoom: 10,
+                center: [-73.7562, 42.7]
+            });
+            
+            var poverty = new FeatureLayer({
+                portalItem:{
+                    id:"813828292add488d84936f483b389fbe"
+                },
+                opacity: 0.6
+            });
+            
+            myMap3.add(poverty);
+            
+            
+            var publictransit = new FeatureLayer({
+                url:"https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Transit_Map_Routes/FeatureServer/0",
+                title: "National Transit Map Routes",
+                renderer: TransRenderer
+            });
+        
+                myMap3.add(publictransit);
+            
+            var hospitals = new FeatureLayer({
+                url: "https://services1.arcgis.com/Hp6G80Pky0om7QvQ/arcgis/rest/services/Hospitals_gdb/FeatureServer/0",
+                title: "Hospitals",
+                renderer: HospRend,
+            });
+
+            myMap3.add(hospitals);
+            
+            const views = [myView, myView2, myView3];
+        let active;
+        
+        const sync = (source) => {
+            if (!active || !active.viewpoint || active !== source) {
+                return;
+            }
+            
+            for (const view of views) {
+                if (view !== active) {
+                    view.viewpoint = active.viewpoint;
+                }
+            }
+        };
+        
+        for (const view of views) {
+            view.watch(["interacting", "animation"], () => {
+                active = view;
+                sync(active);
+            });
+            
+            view.watch("viewpoint", () => sync(view));
+        }
+
+        const layerListsContainer = document.createElement("div");
+        document.getElementById("legendDiv").appendChild(layerListsContainer);
+            
+            const layerLists = [
+                new LayerList({
+                view: myView,
+                listItemCreatedFunction: function (event) {
+                    const item = event.item;
+                    if (item.layer.type != "group") {
+                        item.panel = {
+                            content: "legend",
+                            open: true,
+                        };
+                    }
+                },
+        }),
+
+                new LayerList({
+                view: myView2,
+                listItemCreatedFunction: function (event) {
+                    const item = event.item;
+                    if (item.layer.type != "group") {
+                        item.panel = {
+                            content: "legend",
+                            open: true,
+                        };
+                    }
+                },
+        }),
+                new LayerList({
+                view: myView3,
+                listItemCreatedFunction: function (event) {
+                    const item = event.item;
+                    if (item.layer.type != "group") {
+                        item.panel = {
+                            content: "legend",
+                            open: true,
+                        };
+                    }
+                },     
+        })
+        ];
+            layerLists.forEach(layerList => {
+            const container = document.createElement("div");
+            layerListsContainer.appendChild(container);
+            layerList.container = container;
+
+        });
+     });        
+    </script>
+</body>
+<div id="header">
+    <h1><b>Accessiblity to Hospitals by Public Transportation in Albany, New York</b></h1>
+</div>
+       <div id="legendDiv">
+        <div id="layerListsContainer"></div>
+    </div>
+     <div id = "titleDiv2">Walking Distance to Transit Lines</div>
+    <div id="viewDiv"></div>
+    <div id="viewDiv2">
+        <div id = "titleDiv">Population Density</div>
+        <div id="mapTop"></div>
+        <div id = "titleDiv">Households in Poverty</div>
+        <div id="mapBottom"></div>
+    </div> 
+</html>
